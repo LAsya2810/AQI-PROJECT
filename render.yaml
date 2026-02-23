@@ -21,21 +21,16 @@ services:
       minInstances: 1
       maxInstances: 3
 
-  # Frontend static site
+  # Frontend web service (serves static React build)
   - name: aqi-frontend
-    type: static_site
+    type: web
+    runtime: node
     plan: free
     buildCommand: cd frontend && npm install && npm run build
-    staticPublicPath: frontend/build
-    routes:
-      - path: /
-        destination: aqi-frontend
+    startCommand: npm install -g serve && serve -s frontend/build -l 3000
     envVars:
       - key: REACT_APP_API_URL
         value: https://aqi-backend.onrender.com/api
-
-databases:
-  - name: aqi-database
-    plan: free
-    databaseName: aqi_data
-    user: aqi_user
+    routes:
+      - path: /
+        destination: aqi-frontend
