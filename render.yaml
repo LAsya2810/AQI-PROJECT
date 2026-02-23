@@ -1,0 +1,41 @@
+services:
+  # Backend API service
+  - name: aqi-backend
+    type: web
+    runtime: docker
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DATABASE_URL
+        value: sqlite:///aqi_data.db
+    routes:
+      - path: /api
+        destination: aqi-backend
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+
+  # Frontend static site
+  - name: aqi-frontend
+    type: static_site
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublicPath: frontend/build
+    routes:
+      - path: /
+        destination: aqi-frontend
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://aqi-backend.onrender.com/api
+
+databases:
+  - name: aqi-database
+    plan: free
+    databaseName: aqi_data
+    user: aqi_user

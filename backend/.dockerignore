@@ -1,0 +1,21 @@
+# Docker build exclusions
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info
+dist/
+build/
+.venv
+.env
+.git
+.gitignore
+README.md
+.DS_Store
+*.db
+instance/
+.pytest_cache
+.coverage
